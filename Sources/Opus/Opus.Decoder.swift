@@ -68,6 +68,38 @@ extension Opus.Decoder {
 		}
 		output.frameLength = AVAudioFrameCount(decodedCount)
 	}
+
+    public func decodeToData(_ input: Data) throws -> Data {
+        try input.withUnsafeBytes {
+            let input = $0.bindMemory(to: UInt8.self)
+            let sampleCount = opus_decoder_get_nb_samples(decoder, input.baseAddress!, Int32($0.count))
+            if sampleCount < 0 {
+                throw Opus.Error(sampleCount)
+            }
+            let bytesCount: Int
+            switch format.commonFormat {
+            case .pcmFormatInt16:
+                bytesCount = 2 * Int(sampleCount)
+            case .pcmFormatFloat32:
+                bytesCount = 4 * Int(sampleCount)
+            default:
+                throw Opus.Error.badArgument
+            }
+            var decodedCount: Int = 0
+            var data = Data(count: bytesCount)
+            try data.withUnsafeMutableBytes {
+                let output = $0.bindMemory(to: Int16.self)
+                decodedCount = try decode(input, to: output)
+            }
+            if decodedCount < 0 {
+                throw Opus.Error(decodedCount)
+            }
+            if decodedCount != bytesCount {
+                throw Opus.Error.invalidState
+            }
+            return data
+        }
+    }
 }
 
 // MARK: Private decode methods
