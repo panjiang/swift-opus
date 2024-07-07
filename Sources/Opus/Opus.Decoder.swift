@@ -97,7 +97,7 @@ extension Opus.Decoder {
             if decodedCount < 0 {
                 throw Opus.Error(decodedCount)
             }
-            if decodedCount != bytesCount {
+            if decodedCount != sampleCount {
                 throw Opus.Error.invalidState
             }
             return data
