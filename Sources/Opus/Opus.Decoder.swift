@@ -76,6 +76,7 @@ extension Opus.Decoder {
             if sampleCount < 0 {
                 throw Opus.Error(sampleCount)
             }
+            print("Sample count \(sampleCount)")
             let bytesCount: Int
             switch format.commonFormat {
             case .pcmFormatInt16:
@@ -85,12 +86,14 @@ extension Opus.Decoder {
             default:
                 throw Opus.Error.badArgument
             }
+            print("Bytes count \(bytesCount)")
             var decodedCount: Int = 0
             var data = Data(count: bytesCount)
             try data.withUnsafeMutableBytes {
                 let output = $0.bindMemory(to: Int16.self)
                 decodedCount = try decode(input, to: output)
             }
+            print("Decoded count \(decodedCount)")
             if decodedCount < 0 {
                 throw Opus.Error(decodedCount)
             }
