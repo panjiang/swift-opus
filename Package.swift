@@ -12,10 +12,12 @@ let package = Package(
 	products: [
 		.library(
 			name: "Copus",
+			type: .static,
 			targets: ["Copus"]
 		),
 		.library(
 			name: "Opus",
+			type: .static,
 			targets: ["Opus", "Copus"]
 		),
 	],
